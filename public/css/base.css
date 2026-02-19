@@ -1,0 +1,36 @@
+:root {
+    --bg-color: #ffffff;
+    --text-color: #1a1a1a;
+    --accent-color: #000000;
+    --gray-light: #f4f4f4;
+    --font-main: 'Lato', sans-serif;
+    --font-title: 'Playfair Display', serif;
+    --gold-premium: #d4af37;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+    /* Respeita apenas o Header fixo para não cobrir o título da seção */
+    scroll-padding-top: 100px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    padding-bottom: 50px;
+    overflow-x: hidden;
+}
+
+/* --- GERAL MAIÚSCULO --- */
+#modal-title, .chip-btn, .option-group label, .product-info h3, .filter-btn, .sub-btn {
+    text-transform: uppercase;
+}
+
+/* --- ANIMAÇÕES --- */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}

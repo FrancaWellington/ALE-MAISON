@@ -1,0 +1,163 @@
+/* --- BANNER DE LUXO DINÂMICO (CARROSSEL) --- */
+.hero-carousel {
+    position: relative;
+    width: 100%;
+    height: 80vh;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: 50px;
+    border-bottom: 1px solid #eee;
+}
+
+.hero-identity {
+    text-align: center;
+    z-index: 10;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+}
+
+.hero-identity h1 { 
+    font-family: var(--font-title); 
+    font-size: 4.5rem; 
+    letter-spacing: 12px; 
+    margin: 0; 
+    text-transform: uppercase;
+}
+
+.hero-identity p { 
+    letter-spacing: 5px; 
+    font-size: 0.8rem; 
+    color: #666; 
+    margin-top: 10px; 
+    text-transform: uppercase;
+}
+
+.hero-identity-content { text-align: center; width: 100%; }
+.hero-identity.hero-slide { display: flex; align-items: center; justify-content: center; background: #fff; }
+
+.hero-slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out; 
+    z-index: 1;
+    cursor: pointer;
+}
+
+.hero-slide.active { opacity: 1; z-index: 5; }
+.slide-image { width: 100%; height: 100%; object-fit: cover; }
+
+.slide-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 10%;
+    background: #fff;
+}
+
+.slide-content span { color: var(--gold-premium); letter-spacing: 3px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+.slide-content h2 { font-family: var(--font-title); font-size: 3rem; margin: 20px 0; text-transform: uppercase; }
+.slide-content .price { font-size: 1.5rem; margin-bottom: 30px; font-weight: 300; }
+
+.carousel-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: none; border: none; font-size: 2rem; color: rgba(0,0,0,0.2);
+    cursor: pointer; z-index: 20; padding: 20px; transition: all 0.3s ease;
+}
+.carousel-nav:hover { color: #000; transform: translateY(-50%) scale(1.2); }
+.carousel-nav.prev { left: 20px; }
+.carousel-nav.next { right: 20px; }
+.hero-carousel.no-slides .carousel-nav { display: none; }
+
+/* --- NAVEGAÇÃO E FILTROS --- */
+.categories {
+    display: flex; justify-content: center; gap: 30px; padding: 20px 0; flex-wrap: wrap;
+    padding: 0 0 20px 0 !important;
+}
+
+.filter-btn, .sub-btn {
+    background: none; border: none; cursor: pointer; text-transform: uppercase;
+    font-size: 0.85rem; letter-spacing: 2px; color: #888; transition: all 0.3s;
+}
+.filter-btn.active, .filter-btn:hover { color: var(--accent-color); font-weight: 700; border-bottom: 1.5px solid black; }
+
+.sub-categories { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; }
+.sub-btn.active { background-color: black; color: white; padding: 6px 15px; border-radius: 2px; }
+
+/* --- GRID DE PRODUTOS --- */
+.container { max-width: 1400px; margin: 0 auto; padding: 0 5%; }
+.product-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 50px 30px;
+}
+
+/* --- CARROSSEL DE VITRINES (CATEGORIAS) --- */
+.showcases-outer-wrapper { position: relative; width: 100%; padding: 0 50px; margin: 60px 0; }
+.showcases-inner-track {
+    display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 40px; padding: 20px 0; scrollbar-width: none;
+}
+.showcases-inner-track::-webkit-scrollbar { display: none; }
+
+.showcase-container { flex: 0 0 400px; display: flex; flex-direction: column; align-items: center; }
+
+.showcase-main-nav {
+    position: absolute; top: 50%; transform: translateY(-50%); background: #000; color: #fff;
+    border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; z-index: 100;
+    font-size: 1.5rem; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+.showcase-main-nav.prev { left: 0; }
+.showcase-main-nav.next { right: 0; }
+.showcase-main-nav:hover { background: var(--gold-premium); transform: translateY(-50%) scale(1.1); }
+
+.showcase-title { font-family: var(--font-title); font-size: 1.5rem; letter-spacing: 4px; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 30px; text-transform: uppercase; }
+
+.mini-slider-wrapper { position: relative; width: 100%; height: 600px; overflow: hidden; background: #fff; border-radius: 4px; }
+.mini-slides-container { width: 100%; height: 100%; position: relative; }
+
+.mini-item {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    opacity: 0; visibility: hidden; transition: opacity 1.5s ease-in-out; cursor: pointer; overflow: hidden;
+}
+.mini-item.active { opacity: 1; visibility: visible; }
+.mini-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s ease-out; pointer-events: none; transform-origin: center; }
+
+.mini-item h4 {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    background: linear-gradient(transparent, rgba(255,255,255,0.9) 70%);
+    padding: 40px 15px 20px; margin: 0; font-size: 0.9rem; letter-spacing: 3px;
+    text-align: center; color: #000; font-weight: 700;
+}
+
+.mini-nav {
+    position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.7);
+    border: none; width: 40px; height: 40px; cursor: pointer; z-index: 50; font-size: 1.2rem;
+    display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; border-radius: 50%; color: #000;
+}
+.mini-nav:hover { background: #000; color: #fff; }
+.mini-nav.prev { left: 15px; }
+.mini-nav.next { right: 15px; }
+
+/* RESPONSIVIDADE SECTIONS E GRIDS */
+@media (max-width: 1200px) {
+    .showcase-container { flex: 0 1 calc(50% - 30px); }
+}
+
+@media (max-width: 768px) {
+    .hero-carousel { height: 60vh; }
+    .hero-slide { grid-template-columns: 1fr; }
+    .slide-content { position: absolute; bottom: 0; width: 100%; height: 45%; background: rgba(255,255,255,0.95); padding: 20px; }
+    .hero-identity h1 { font-size: 2.2rem; letter-spacing: 6px; }
+    .product-grid { grid-template-columns: 1fr 1fr; gap: 20px 15px; }
+    .showcases-outer-wrapper { padding: 0 10px; }
+    .showcase-container { flex: 0 0 100%; min-width: 100%; } 
+    .showcase-main-nav { display: none; }
+    .mini-slider-wrapper { height: 500px; }
+    .mini-item { flex: 0 0 85%; }
+    .mini-item img { height: 500px; }
+    .mini-nav { width: 30px; height: 30px; font-size: 0.9rem; }
+}
