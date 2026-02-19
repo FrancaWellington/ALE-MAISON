@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Dono | ALE MAISON</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛍️</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Lato', sans-serif; padding: 20px; background: #f4f4f4; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; margin-bottom: 20px; }
+        input, select { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        
+        /* Botões */
+        button { width: 100%; padding: 10px; background: black; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; margin-bottom: 5px; }
+        button:hover { opacity: 0.8; }
+        
+        .btn-cancelar { background: #666; display: none; } /* Escondido por padrão */
+        .btn-editar { background: #007bff; width: auto; padding: 5px 10px; font-size: 0.8rem; margin-right: 5px; }
+        .delete-btn { background: red; width: auto; padding: 5px 10px; font-size: 0.8rem; }
+        
+        .product-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
+        #admin-panel { display: none; }
+        label { font-weight: bold; display: block; margin-top: 10px; margin-bottom: 5px; }
+        .size-options { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+        .size-options label { font-weight: normal; margin: 0; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" class="container">
+        <h2>Área Restrita</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Senha">
+        <button type="button" onclick="window.fazerLogin()">Entrar</button>
+    </div>
+
+    <div id="admin-panel" class="container">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+            <h2 id="titulo-form">Cadastrar Produto</h2>
+            <button onclick="sair()" style="width:auto; background:#ccc; color:black;">Sair</button>
+        </div>
+        
+        <input type="text" id="prod-name" placeholder="Nome do Produto">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="number" id="prod-old-price" step="0.01" placeholder="Preço Original (De)" style="flex: 1; min-width: 150px;">
+            <input type="number" id="prod-price" step="0.01" placeholder="Preço Atual (Por)" style="flex: 1; min-width: 150px;">
+            <input type="number" id="prod-installments" placeholder="Parcelas (ex: 6)" style="flex: 1; min-width: 100px;" min="1" max="12">
+        </div>
+        
+        <label id="lbl-fotos">Fotos do Produto (Máx 6):</label>
+        <small id="aviso-edicao" style="color:red; display:none;">(Deixe vazio para manter as fotos atuais)</small>
+        <input type="file" id="prod-img-files" accept="image/*" multiple>
+        <p id="upload-status" style="font-size:0.8rem; color:blue; display:none;">Processando...</p>
+
+        <input type="text" id="prod-cat" list="list-cats" placeholder="Categoria (ex: Vestuário)">
+        <datalist id="list-cats"></datalist>
+
+        <input type="text" id="prod-sub" list="list-subs" placeholder="Tipo (ex: Vestidos)">
+        <datalist id="list-subs"></datalist>
+
+        <input type="text" id="prod-colors" placeholder="Cores (ex: Verde, Preto)">
+
+        <label>Tamanhos Disponíveis:</label>
+        <div class="size-options">
+            <label><input type="checkbox" name="size" value="PP"> PP</label>
+            <label><input type="checkbox" name="size" value="P"> P</label>
+            <label><input type="checkbox" name="size" value="M"> M</label>
+            <label><input type="checkbox" name="size" value="G"> G</label>
+            <label><input type="checkbox" name="size" value="GG"> GG</label>
+            <label><input type="checkbox" name="size" value="XG"> XG</label>
+            <label><input type="checkbox" name="size" value="Único"> Único</label>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: bold;">
+                <input type="checkbox" id="prod-exclusive" style="width: auto; margin: 0;"> 
+                MARCAR COMO PRODUTO EXCLUSIVO (SELO PREMIUM)
+            </label>
+        </div>
+
+        <button id="btn-salvar" type="button">Salvar Produto</button>
+        <button id="btn-cancelar" class="btn-cancelar" onclick="cancelarEdicao()">Cancelar Edição</button>
+
+        <h3 style="margin-top: 30px;">Produtos Cadastrados</h3>
+        <div id="product-list"></div>
+    </div>
+
+    <script type="module">
+        import { db, auth, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase-config.js';
+
+        let produtoEditandoId = null; // Guarda o ID se estiver editando
+
+        // --- COMPRESSOR DE IMAGEM ---
+        function comprimirImagem(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const maxWidth = 600; 
+                        const scaleSize = maxWidth / img.width;
+                        const width = (img.width > maxWidth) ? maxWidth : img.width;
+                        const height = (img.width > maxWidth) ? img.height * scaleSize : img.height;
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.6));
+                    };
+                    img.onerror = (err) => reject(err);
+                };
+                reader.onerror = (err) => reject(err);
+            });
+        }
+
+        // --- SUGGESTÕES ---
+        function atualizarSugestoes(produtos) {
+            const listCats = document.getElementById('list-cats');
+            const listSubs = document.getElementById('list-subs');
+            const cats = new Set(['vestuario', 'acessorios', 'perfumaria']); 
+            const subs = new Set();
+            produtos.forEach(p => {
+                if(p.category) cats.add(p.category.toLowerCase());
+                if(p.subcategory) subs.add(p.subcategory.toLowerCase());
+            });
+            listCats.innerHTML = ''; cats.forEach(c => listCats.innerHTML += `<option value="${c}">`);
+            listSubs.innerHTML = ''; subs.forEach(s => listSubs.innerHTML += `<option value="${s}">`);
+        }
+
+        // --- SALVAR (CRIAR OU ATUALIZAR) ---
+        // Função principal de salvamento
+        // --- FUNÇÃO SALVAR CORRIGIDA ---
+        const salvarProduto = async (e) => {
+            if (e && e.preventDefault) e.preventDefault();
+
+            // Captura os elementos diretamente
+            const elNome = document.getElementById('prod-name');
+            const elPreco = document.getElementById('prod-price');
+            const elCat = document.getElementById('prod-cat');
+
+            // Captura os valores de forma simples
+            const nomeValue = elNome.value.trim();
+            const precoValue = elPreco.value; // Em input number, o valor vem limpo
+            const catValue = elCat.value.trim().toLowerCase();
+            
+            // Validações
+            if (!nomeValue) return alert("Erro: O NOME do produto é obrigatório.");
+            if (!precoValue || parseFloat(precoValue) <= 0) return alert("Erro: O PREÇO é obrigatório e deve ser maior que zero.");
+            if (!catValue) return alert("Erro: A CATEGORIA é obrigatória.");
+
+            // Converte para número puro
+            const preco = parseFloat(precoValue);
+            const sub = document.getElementById('prod-sub').value.toLowerCase();
+            const cores = document.getElementById('prod-colors').value;
+            const fileInput = document.getElementById('prod-img-files');
+            
+            const tamanhos = [];
+            document.querySelectorAll('input[name="size"]:checked').forEach(cb => tamanhos.push(cb.value));
+
+            document.getElementById('upload-status').style.display = 'block';
+
+            try {
+                let imagensBase64 = [];
+                if (fileInput.files.length > 0) {
+                    if (fileInput.files.length > 6) throw new Error("Máximo de 6 fotos!");
+                    const promessas = [];
+                    for (let i = 0; i < fileInput.files.length; i++) promessas.push(comprimirImagem(fileInput.files[i]));
+                    imagensBase64 = await Promise.all(promessas);
+                }
+
+                const dadosProduto = {
+                    name: nomeValue,
+                    price: preco,
+                    oldPrice: parseFloat(document.getElementById('prod-old-price').value) || 0,
+                    installments: parseInt(document.getElementById('prod-installments').value) || 1,
+                    exclusive: document.getElementById('prod-exclusive').checked,
+                    category: catValue,
+                    subcategory: sub,
+                    colors: cores,
+                    sizes: tamanhos
+                };
+
+                if (imagensBase64.length > 0) dadosProduto.images = imagensBase64;
+
+                if (produtoEditandoId) {
+                    await updateDoc(doc(db, "produtos", produtoEditandoId), dadosProduto);
+                    alert("Produto atualizado!");
+                } else {
+                    if (imagensBase64.length === 0) throw new Error("Escolha pelo menos uma foto.");
+                    await addDoc(collection(db, "produtos"), dadosProduto);
+                    alert("Produto criado!");
+                }
+
+                cancelarEdicao();
+                carregarLista();
+            } catch (e) {
+                alert(e.message);
+            } finally {
+                document.getElementById('upload-status').style.display = 'none';
+            }
+        };
+
+        // --- EXPOSIÇÃO PARA O HTML (Resolve o ReferenceError) ---
+        window.fazerLogin = async () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            try { 
+                await signInWithEmailAndPassword(auth, email, pass); 
+            } catch (e) { 
+                alert("Erro no login: " + e.message); 
+            }
+        };
+
+        window.sair = () => signOut(auth);
+
+        // --- VÍNCULO ÚNICO DO BOTÃO DE SALVAR (IMPEDE DUPLICAÇÃO) ---
+        const btnSalvar = document.getElementById('btn-salvar');
+        if (btnSalvar) {
+            btnSalvar.addEventListener('click', async (e) => {
+                btnSalvar.disabled = true; // Trava o botão
+                btnSalvar.innerText = "Salvando..."; // Feedback visual
+                
+                try {
+                    await salvarProduto(e);
+                } finally {
+                    btnSalvar.disabled = false; // Destrava após terminar
+                    btnSalvar.innerText = produtoEditandoId ? "Atualizar Produto" : "Salvar Produto";
+                }
+            });
+        }
+
+        // --- EDITAR ---
+        window.editar = async (id) => {
+            try {
+                const docSnap = await getDoc(doc(db, "produtos", id));
+                if (docSnap.exists()) {
+                    const p = docSnap.data();
+                    produtoEditandoId = id;
+
+                    // Preenche campos
+                    document.getElementById('prod-name').value = p.name;
+                    document.getElementById('prod-price').value = p.price;
+                    document.getElementById('prod-old-price').value = p.oldPrice || "";
+                    document.getElementById('prod-installments').value = p.installments || 1;
+                    document.getElementById('prod-cat').value = p.category;
+                    document.getElementById('prod-sub').value = p.subcategory;
+                    document.getElementById('prod-colors').value = p.colors || "";
+                    
+                    // Marca tamanhos
+                    document.querySelectorAll('input[name="size"]').forEach(cb => {
+                        cb.checked = p.sizes && p.sizes.includes(cb.value);
+                    });
+
+                    // Ajusta UI para modo edição
+                    document.getElementById('titulo-form').innerText = "Editando: " + p.name;
+                    document.getElementById('btn-salvar').innerText = "Atualizar Produto";
+                    document.getElementById('btn-cancelar').style.display = 'block';
+                    document.getElementById('aviso-edicao').style.display = 'inline';
+                    
+                    // Rola para o topo
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } catch (e) {
+                alert("Erro ao carregar produto: " + e.message);
+            }
+        }
+
+        window.cancelarEdicao = () => {
+            produtoEditandoId = null;
+            document.getElementById('prod-name').value = '';
+            document.getElementById('prod-price').value = '';
+            document.getElementById('prod-cat').value = '';
+            document.getElementById('prod-sub').value = '';
+            document.getElementById('prod-colors').value = '';
+            document.getElementById('prod-img-files').value = '';
+            document.querySelectorAll('input[name="size"]').forEach(cb => cb.checked = false);
+
+            // Reseta UI
+            document.getElementById('titulo-form').innerText = "Cadastrar Produto";
+            document.getElementById('btn-salvar').innerText = "Salvar Produto";
+            document.getElementById('btn-cancelar').style.display = 'none';
+            document.getElementById('aviso-edicao').style.display = 'none';
+        }
+
+        window.deletar = async (id) => {
+            if(confirm("Apagar este produto permanentemente?")) {
+                await deleteDoc(doc(db, "produtos", id));
+                carregarLista();
+            }
+        }
+
+        async function carregarLista() {
+            const lista = document.getElementById('product-list');
+            lista.innerHTML = "Carregando...";
+            const snapshot = await getDocs(collection(db, "produtos"));
+            lista.innerHTML = "";
+            let temp = [];
+            
+            snapshot.forEach((doc) => {
+                const p = doc.data();
+                temp.push(p);
+                
+                let capa = "https://via.placeholder.com/150";
+                if (p.images && p.images.length > 0) capa = p.images[0];
+                else if (p.image) capa = p.image;
+
+                lista.innerHTML += `
+                    <div class="product-item">
+                        <div style="display:flex; align-items:center;">
+                            <img src="${capa}" style="width:40px; height:40px; object-fit:cover; border-radius:4px; margin-right:10px;">
+                            <span>${p.name}</span>
+                        </div>
+                        <div>
+                            <button class="btn-editar" onclick="editar('${doc.id}')">Editar</button>
+                            <button class="delete-btn" onclick="deletar('${doc.id}')">Excluir</button>
+                        </div>
+                    </div>
+                `;
+            });
+            atualizarSugestoes(temp);
+        }
+
+        // Auth listeners e Login...
+        window.fazerLogin = async () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            try { await signInWithEmailAndPassword(auth, email, pass); } 
+            catch (e) { alert("Erro: " + e.message); }
+        };
+        window.sair = () => signOut(auth);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                carregarLista();
+            } else {
+                document.getElementById('login-screen').style.display = 'block';
+                document.getElementById('admin-panel').style.display = 'none';
+            }
+        });
+
+        </script>
+</body>
+</html>

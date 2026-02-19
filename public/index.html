@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALE MAISON | Boutique</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛍️</text></svg>">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">ALE MAISON</div>
+        <div class="cart-icon" onclick="toggleCart()">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span id="cart-count">0</span>
+        </div>
+    </header>
+
+    <section id="hero-carousel" class="hero-carousel">
+        <div class="hero-slide hero-identity active">
+            <div class="hero-identity-content">
+                <h1>ALE MAISON</h1>
+                <p>SOFISTICAÇÃO EM CADA DETALHE</p>
+            </div>
+        </div>
+        <button class="carousel-nav prev" onclick="changeSlide(-1)">❮</button>
+        <button class="carousel-nav next" onclick="changeSlide(1)">❯</button>
+    </section>
+
+    <section class="brand-story" style="text-align: center; padding: 60px 10% 40px; background: #fff;">
+        <h2 style="font-size: 0.8rem; letter-spacing: 4px; color: #888; text-transform: uppercase;">A Essência Ale Maison</h2>
+        <p style="font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 500; color: #1a1a1a; line-height: 1.7; margin-top: 20px; letter-spacing: 0.5px;">
+            "Peças selecionadas para mulheres que compreendem que a verdadeira elegância reside na simplicidade e na qualidade de cada detalhe."
+        </p>
+    </section>
+
+    <section id="category-showcases" class="category-showcases"></section>
+
+    <nav class="categories" id="main-menu">
+        <button class="filter-btn" onclick="toggleMainFilter('todos')" title="Limpar Filtros" style="color: #ccc;">
+            <i class="fa-solid fa-filter-circle-xmark"></i>
+        </button>
+    </nav>
+
+    <div class="sub-categories" id="sub-filters" style="display: none; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 40px;">
+    </div>
+
+    <main class="container">
+        <div id="product-grid" class="product-grid">
+            </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>Sobre a Boutique</h3>
+                <p>Curadoria exclusiva de peças que unem sofisticação, conforto e atemporalidade para a mulher contemporânea.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/alemaisonoficial?igsh=NHRkazNvNDhyc2Zo" target="_blank" rel="noopener noreferrer">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+    
+                    <a href="https://wa.me/5547933869807" target="_blank" rel="noopener noreferrer">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h3>Atendimento</h3>
+                <ul>
+                    <li><a href="javascript:void(0)" onclick="openHelpModal('como-comprar')">Como Comprar</a></li>
+                    <li><a href="javascript:void(0)" onclick="openHelpModal('envios')">Envios e Prazos</a></li>
+                    <li><a href="javascript:void(0)" onclick="openHelpModal('trocas')">Trocas e Devoluções</a></li>
+                    <li><a href="javascript:void(0)" onclick="openHelpModal('cuidados')">Cuidados com a Peça</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Pagamento</h3>
+                <div class="payment-methods">
+                    <i class="fa-brands fa-cc-visa" title="Visa"></i>
+                    <i class="fa-brands fa-cc-mastercard" title="Mastercard"></i>
+                    <i class="fa-brands fa-pix" title="Pix"></i>
+                    <i class="fa-solid fa-barcode" title="Boleto"></i>
+                </div>
+                <h3 style="margin-top: 20px;">Segurança</h3>
+                <p style="font-size: 0.7rem;"><i class="fa-solid fa-lock"></i> Ambiente 100% Seguro</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 ALE MAISON BOUTIQUE. TODOS OS DIREITOS RESERVADOS.</p>
+            <p>WFRANCA.</p>
+        </div>
+    </footer>
+
+    <div id="cart-sidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h2>Sua Sacola</h2>
+            <button onclick="toggleCart()" class="close-btn">&times;</button>
+        </div>
+        <div id="cart-items" class="cart-items">
+            </div>
+        <div class="cart-footer">
+            <div class="total">
+                <span>Total</span>
+                <span id="cart-total">R$ 0,00</span>
+            </div>
+            <div class="checkout-container">
+                <a href="#" class="whatsapp-btn" id="whatsapp-checkout" onclick="checkoutWhatsApp()">
+                    <i class="fa-brands fa-whatsapp"></i> FINALIZAR NO WHATSAPP
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div id="overlay" onclick="toggleCart()"></div>
+
+    <div id="product-modal" class="modal-overlay" onclick="closeProductModal(event)">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeProductModal()">&times;</button>
+            
+            <div class="modal-body">
+                <div class="modal-gallery-section">
+                    <div class="thumbnails-strip" id="modal-thumbs">
+                        </div>
+                    <div class="main-image-container">
+                        <img id="modal-main-img" src="" alt="Produto">
+                    </div>
+                </div>
+
+                <div class="modal-info-section">
+                    <h2 id="modal-title">Nome do Produto</h2>
+                    <p class="modal-price" id="modal-price">R$ 0,00</p>
+                    <p class="modal-installments">ou 6x sem juros no cartão</p> <div class="modal-divider"></div>
+
+                    <div class="option-group" id="group-colors">
+                        <label>Cores:</label>
+                        <div class="option-chips" id="modal-colors"></div>
+                    </div>
+
+                    <div class="option-group" id="group-sizes">
+                        <label>Tamanho:</label>
+                        <div class="option-chips" id="modal-sizes"></div>
+                    </div>
+
+                    <button id="modal-add-btn" class="modal-add-btn">
+                        <i class="fa-solid fa-bag-shopping"></i> ADICIONAR À SACOLA
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="back-to-top" title="Voltar para as Vitrines">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+    
+    <div id="help-modal" class="modal-overlay" onclick="closeHelpModal(event)">
+    <div class="modal-content" style="max-width: 600px; height: auto; padding: 40px;">
+        <button class="modal-close" onclick="closeHelpModal(event)">&times;</button>
+        
+        <div class="help-content">
+            <h2 style="letter-spacing: 4px; margin-bottom: 30px; text-align: center; text-transform: uppercase;"></h2>
+            <div style="font-family: var(--font-main); line-height: 1.8; color: #555;"></div>
+            
+            <button class="modal-add-btn" onclick="closeHelpModal(event)" style="margin-top: 30px;">ENTENDI</button>
+        </div>
+    </div>
+</div>
+
+    <script type="module" src="script.js"></script>
+
+    <script>
+        window.onload = () => {
+            // Agora usamos o window. para garantir que estamos pegando a versão global
+            if (typeof window.renderCategoryShowcases === 'function') {
+                window.renderCategoryShowcases();
+            }
+        };
+    </script>
+</body>
+</html>
