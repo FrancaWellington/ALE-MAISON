@@ -6,6 +6,11 @@
     <title>ALE MAISON | Boutique</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛍️</text></svg>">
     
+    <meta property="og:title" content="ALE MAISON | Boutique">
+    <meta property="og:description" content="Sofisticação em cada detalhe. Curadoria exclusiva de peças que unem elegância e qualidade para a mulher contemporânea.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?q=80&w=1000&auto=format&fit=crop">
+    <meta property="og:type" content="website">
+
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/header-footer.css">
@@ -151,6 +156,15 @@
                         <div class="option-chips" id="modal-sizes"></div>
                     </div>
 
+                    <div class="option-group" id="group-quantity" style="margin-top: 15px;">
+                        <label>Quantidade:</label>
+                        <div class="modal-qty-controls">
+                            <button type="button" onclick="changeModalQuantity(-1)">-</button>
+                            <span id="modal-qty-display">1</span>
+                            <button type="button" onclick="changeModalQuantity(1)">+</button>
+                        </div>
+                    </div>
+
                     <button id="modal-add-btn" class="modal-add-btn">
                         <i class="fa-solid fa-bag-shopping"></i> ADICIONAR À SACOLA
                     </button>
@@ -162,6 +176,10 @@
     <button id="back-to-top" title="Voltar para as Vitrines">
         <i class="fa-solid fa-arrow-up"></i>
     </button>
+
+    <a href="https://wa.me/5547933869807?text=Olá Ale! Gostaria de tirar uma dúvida sobre as peças do site." target="_blank" id="whatsapp-floating" title="Fale conosco no WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
     
     <div id="help-modal" class="modal-overlay" onclick="closeHelpModal(event)">
     <div class="modal-content" style="max-width: 600px; height: auto; padding: 40px;">

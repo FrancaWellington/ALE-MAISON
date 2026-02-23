@@ -1,5 +1,12 @@
 window.selectedSize = null;
 window.selectedColor = null;
+window.modalQuantity = 1;
+
+window.changeModalQuantity = function(delta) {
+    window.modalQuantity += delta;
+    if (window.modalQuantity < 1) window.modalQuantity = 1; // Não deixa ficar negativo ou zero
+    document.getElementById('modal-qty-display').innerText = window.modalQuantity;
+};
 
 window.openProductModal = function(id) {
     const product = window.products.find(p => p.id == id);
@@ -7,6 +14,10 @@ window.openProductModal = function(id) {
 
     window.selectedSize = null;
     window.selectedColor = null;
+    window.modalQuantity = 1; // Reseta a quantidade para 1 ao abrir novo produto
+    
+    const qtyDisplay = document.getElementById('modal-qty-display');
+    if(qtyDisplay) qtyDisplay.innerText = '1';
 
     document.getElementById('modal-title').innerText = product.name;
     
@@ -170,7 +181,7 @@ window.openHelpModal = function(topic) {
             text: `<p><strong>Prazo:</strong> Você tem até 7 dias corridos após o recebimento para solicitar a troca ou devolução.</p>
                    <p><strong>Condições:</strong> A peça deve estar com a etiqueta original, sem sinais de uso e em sua embalagem.</p>
                    <p style="margin-bottom: 25px;"><strong>Como solicitar:</strong> Clique no botão abaixo para iniciar o processo com nossa consultora.</p>
-                   <a href="https://wa.me/5547933869807?text=Olá Ale Maison! Gostaria de solicitar a devolução/troca de um pedido." 
+                   <a href="https://wa.me/5547933869807?text=Olá Ale! Gostaria de solicitar a devolução/troca de um pedido." 
                       target="_blank" 
                       class="whatsapp-btn" 
                       style="text-decoration: none; font-size: 0.7rem;">

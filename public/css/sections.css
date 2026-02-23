@@ -100,6 +100,9 @@
 .showcases-outer-wrapper { position: relative; width: 100%; padding: 0 50px; margin: 60px 0; }
 .showcases-inner-track {
     display: flex; overflow-x: auto; scroll-behavior: smooth; gap: 40px; padding: 20px 0; scrollbar-width: none;
+    width: max-content; /* Faz a trilha abraçar apenas o conteúdo existente */
+    max-width: 100%; /* Impede que a trilha vaze da tela se tiver muitos itens */
+    margin: 0 auto; /* Centraliza a trilha perfeitamente na página */
 }
 .showcases-inner-track::-webkit-scrollbar { display: none; }
 
