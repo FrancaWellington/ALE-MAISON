@@ -101,16 +101,20 @@ function renderProducts(items) {
         }
 
         const seloExclusivo = product.exclusive ? `<span class="exclusive-badge">Seleção Exclusive</span>` : '';
+        const seloEsgotado = product.outOfStock ? `<span class="sold-out-badge">ESGOTADO</span>` : '';
+        const imgClass = product.outOfStock ? 'product-image sold-out-img' : 'product-image';
+        const btnText = product.outOfStock ? 'VER DETALHES (ESGOTADO)' : 'VER DETALHES';
 
         card.innerHTML = `
             <div class="image-container">
                 ${seloExclusivo}
-                <img src="${product.imageList[0]}" class="product-image" alt="${product.name}">
+                ${seloEsgotado}
+                <img src="${product.imageList[0]}" class="${imgClass}" alt="${product.name}">
             </div>
             <div class="product-info">
                 <h3>${product.name}</h3>
                 ${priceHtml}
-                <button class="add-btn" onclick="event.stopPropagation(); window.openProductModal(String('${product.id}'))">VER DETALHES</button>
+                <button class="add-btn" onclick="event.stopPropagation(); window.openProductModal(String('${product.id}'))">${btnText}</button>
             </div>
         `;
         

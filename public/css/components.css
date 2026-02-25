@@ -38,6 +38,25 @@
     z-index: 10;
 }
 
+.sold-out-badge {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: 700;
+    z-index: 15;
+}
+
+.sold-out-img {
+    opacity: 0.5;
+    filter: grayscale(40%);
+}
+
 .product-info h3 {
     font-size: 0.85rem;
     font-weight: 400;
@@ -141,6 +160,31 @@
 #modal-title { font-family: var(--font-title); font-size: 2rem; }
 .modal-price { font-size: 1.6rem; font-weight: 700; }
 .modal-installments { color: #666; font-size: 0.9rem; margin-top: -10px; }
+
+.desc-container { position: relative; }
+
+.modal-details { 
+    font-size: 0.9rem; color: #555; line-height: 1.6; margin-top: 5px; 
+    white-space: pre-wrap; transition: all 0.3s ease; 
+}
+
+/* Corta o texto em 3 linhas quando está "fechado" */
+.modal-details.collapsed { 
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden; 
+}
+
+/* Estilo do botão "Ver mais/menos" */
+.toggle-desc-btn { 
+    background: none; border: none; padding: 0; margin-top: 8px;
+    font-size: 0.85rem; font-weight: 700; color: #000;
+    text-decoration: underline; cursor: pointer; text-transform: none;
+    transition: color 0.3s ease;
+}
+
+.toggle-desc-btn:hover { color: #666; }
 
 .option-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 .chip-btn {

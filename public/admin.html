@@ -62,6 +62,8 @@
 
         <input type="text" id="prod-colors" placeholder="Cores (ex: Verde, Preto)">
 
+        <textarea id="prod-details" rows="3" placeholder="Detalhes da Peça (Tecido, caimento, etc)" style="width: 100%; padding: 10px; margin-bottom: 15px; margin-top: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-family: inherit; resize: vertical;"></textarea>
+
         <label>Tamanhos Disponíveis:</label>
         <div class="size-options">
             <label><input type="checkbox" name="size" value="PP"> PP</label>
@@ -77,6 +79,10 @@
             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: bold;">
                 <input type="checkbox" id="prod-exclusive" style="width: auto; margin: 0;"> 
                 MARCAR COMO PRODUTO EXCLUSIVO (SELO PREMIUM)
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: bold; color: red; margin-top: 10px;">
+                <input type="checkbox" id="prod-out-of-stock" style="width: auto; margin: 0;"> 
+                MARCAR COMO ESGOTADO (FORA DE ESTOQUE)
             </label>
         </div>
 
@@ -179,9 +185,11 @@
                     oldPrice: parseFloat(document.getElementById('prod-old-price').value) || 0,
                     installments: parseInt(document.getElementById('prod-installments').value) || 1,
                     exclusive: document.getElementById('prod-exclusive').checked,
-                    category: catValue,
+                    outOfStock: document.getElementById('prod-out-of-stock').checked,
+                    category: catValue, 
                     subcategory: sub,
                     colors: cores,
+                    details: document.getElementById('prod-details').value.trim(),
                     sizes: tamanhos
                 };
 
@@ -250,6 +258,9 @@
                     document.getElementById('prod-cat').value = p.category;
                     document.getElementById('prod-sub').value = p.subcategory;
                     document.getElementById('prod-colors').value = p.colors || "";
+                    document.getElementById('prod-details').value = p.details || "";
+                    document.getElementById('prod-exclusive').checked = p.exclusive || false;
+                    document.getElementById('prod-out-of-stock').checked = p.outOfStock || false;
                     
                     // Marca tamanhos
                     document.querySelectorAll('input[name="size"]').forEach(cb => {
@@ -277,7 +288,10 @@
             document.getElementById('prod-cat').value = '';
             document.getElementById('prod-sub').value = '';
             document.getElementById('prod-colors').value = '';
+            document.getElementById('prod-details').value = '';
             document.getElementById('prod-img-files').value = '';
+            document.getElementById('prod-exclusive').checked = false;
+            document.getElementById('prod-out-of-stock').checked = false;
             document.querySelectorAll('input[name="size"]').forEach(cb => cb.checked = false);
 
             // Reseta UI

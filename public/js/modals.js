@@ -48,6 +48,31 @@ window.openProductModal = function(id) {
         pInstallments.style.display = 'none';
     }
 
+    const groupDetails = document.getElementById('group-details');
+    const pDetails = document.getElementById('modal-details');
+    const toggleBtn = document.getElementById('toggle-desc-btn');
+
+    if (groupDetails && pDetails && toggleBtn) {
+        if (product.details && product.details.trim() !== '') {
+            pDetails.innerText = product.details;
+            groupDetails.style.display = 'block';
+            
+            // Reseta para o estado "fechado" (apenas 3 linhas)
+            pDetails.classList.add('collapsed');
+            toggleBtn.innerText = 'Ver mais';
+            
+            // Só mostra o botão de "Ver mais" se o texto tiver mais de 120 caracteres
+            if (product.details.length > 120) {
+                toggleBtn.style.display = 'block';
+            } else {
+                toggleBtn.style.display = 'none';
+                pDetails.classList.remove('collapsed');
+            }
+        } else {
+            groupDetails.style.display = 'none';
+        }
+    }
+
     const imgContainer = document.querySelector('.main-image-container');
     const mainImg = document.getElementById('modal-main-img');
 
@@ -81,10 +106,21 @@ window.openProductModal = function(id) {
     
     const btnAdd = document.getElementById('modal-add-btn');
     btnAdd.onclick = null; 
-    btnAdd.onclick = (e) => {
-        e.preventDefault();
-        window.addToCartFromModal(product.id);
-    };
+    
+    if (product.outOfStock) {
+        btnAdd.innerHTML = '<i class="fa-solid fa-ban"></i> ESGOTADO';
+        btnAdd.style.backgroundColor = '#ccc';
+        btnAdd.style.cursor = 'not-allowed';
+        btnAdd.onclick = (e) => e.preventDefault();
+    } else {
+        btnAdd.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> ADICIONAR À SACOLA';
+        btnAdd.style.backgroundColor = '#000';
+        btnAdd.style.cursor = 'pointer';
+        btnAdd.onclick = (e) => {
+            e.preventDefault();
+            window.addToCartFromModal(product.id);
+        };
+    }
 
     const thumbsContainer = document.getElementById('modal-thumbs');
     mainImg.src = product.imageList[0]; 
@@ -221,5 +257,18 @@ window.closeHelpModal = function(event) {
     if (!event || event.target === modal || event.target.closest('.modal-close') || event.target.closest('.modal-add-btn')) {
         modal.classList.remove('active');
         document.body.style.overflow = 'auto';
+    }
+};
+
+window.toggleDescription = function() {
+    const pDetails = document.getElementById('modal-details');
+    const toggleBtn = document.getElementById('toggle-desc-btn');
+    
+    if (pDetails.classList.contains('collapsed')) {
+        pDetails.classList.remove('collapsed');
+        toggleBtn.innerText = 'Ver menos';
+    } else {
+        pDetails.classList.add('collapsed');
+        toggleBtn.innerText = 'Ver mais';
     }
 };
